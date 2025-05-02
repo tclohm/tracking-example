@@ -1,13 +1,20 @@
-import React, { useRef } from 'react';
-import { useTracking, useClickTracking } from 'react-user-tracking';
-import TrackableButton from './TrackableButton.tsx';
+import React from 'react';
+import { useTracking } from 'react-user-tracking';
+import TrackableButton from './TrackableButton';
 
-const Product = ({ product }) => {
+interface ProductProps {
+  product: {
+    id: number;
+    name: string;
+    price: number;
+  };
+}
+
+const Product = ({ product }: ProductProps) => {
   const { trackEvent } = useTracking();
-  // Use tracking hook
   
   const handleAddToCart = () => {
-    // Additional manual tracking if needed
+    // Track the add to cart event
     trackEvent('cart_update', {
       metadata: {
         action: 'add_item',
@@ -16,6 +23,8 @@ const Product = ({ product }) => {
         price: product.price
       }
     });
+    
+    console.log('Added to cart:', product);
   };
   
   return (
@@ -24,9 +33,10 @@ const Product = ({ product }) => {
       <div className="product-info">
         <div className="product-title">{product.name}</div>
         <div className="product-price">${product.price.toFixed(2)}</div>
-        <TrackableButton onClick={handleAddToCart} 
+        <TrackableButton 
+          onClick={handleAddToCart} 
           category="product"
-          label="wishlist"
+          label="add_to_cart"
         >
           ADD TO CART
         </TrackableButton>
