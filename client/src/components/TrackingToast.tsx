@@ -20,8 +20,8 @@ const TrackingToast = ({ privacyUrl = '/privacy' }) => {
   }, []);
 
   useEffect(() => {
-    console.log("EVENTS", events)
-  }, [])
+    console.log("Current tracking events:", events)
+  }, [events])
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
