@@ -8,7 +8,7 @@ const PORT = 3001;
 
 // Middleware
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '5mb' }));
 
 // Tracking endpoint
 app.post('/api/track', (req, res) => {
@@ -29,7 +29,12 @@ app.post('/api/track', (req, res) => {
   });
 });
 
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Mock tracking server running on http://localhost:${PORT}`);
+  console.log(`Track endpoint: http://localhost:${PORT}/api/track`)
 });
