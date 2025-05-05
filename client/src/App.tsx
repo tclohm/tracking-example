@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router';
-import { TrackingProvider, TrackingToast, trackingService } from 'react-user-tracking';
+import { TrackingProvider, trackingService } from 'react-user-tracking';
+import TrackingToast from './components/TrackingToast';
 import { ThemeProvider } from 'styled-components';
 import { GlobalStyles } from './styles/GlobalStyles';
 import { theme } from './styles/theme';
