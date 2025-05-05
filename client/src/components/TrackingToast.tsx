@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useTracking } from 'react-user-tracking';
 
+// TrackingToast component - displays tracking info
 interface TrackingToastProps {
   privacyUrl?: string;
 }
 
-// Tom Sachs-inspired tracking toast component
-const TrackingToast = ({ privacyUrl = '/privacy' }: TrackingToastProps): JSX.Element => {
+export default function TrackingToast({ privacyUrl = '/privacy' }: TrackingToastProps): JSX.Element | null {
   const { events, sessionId } = useTracking();
   const [visible, setVisible] = useState(true);
   const [expanded, setExpanded] = useState(false);
@@ -23,25 +23,15 @@ const TrackingToast = ({ privacyUrl = '/privacy' }: TrackingToastProps): JSX.Ele
     return () => window.clearInterval(timer);
   }, []);
 
-  useEffect(() => {
-    console.log("Current tracking events:", events)
-  }, [events])
-
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins < 10 ? '0' + mins : mins}:${secs < 10 ? '0' + secs : secs}`;
   };
 
-  const formatPath = (path: number): string => {
-    if (!path) return '';
-    const cleanPath = path.replace(/https?:/\/\/[^\/]+/, '');
-    return cleanPath.replace(/\/$/, '');
-  };
-
   if (!visible) return null;
 
-  // Count clicks
+  // Count clicks and pageviews
   const clickCount = events.filter(e => e.eventType === 'click').length;
   const pageViewCount = events.filter(e => e.eventType === 'pageview').length;
   
@@ -49,14 +39,14 @@ const TrackingToast = ({ privacyUrl = '/privacy' }: TrackingToastProps): JSX.Ele
     <div className="tracking-toast-container">
       <div className="tracking-toast-header">
         <div className="tracking-toast-title">
-          ACTIVITY LOG
+          We are tracking you
         </div>
         <div>
           <button 
             onClick={() => setExpanded(!expanded)}
             className="tracking-toast-button"
           >
-            {expanded ? 'LESS' : 'MORE'}
+            {expanded ? 'Less' : 'More'}
           </button>
           <button 
             onClick={() => setVisible(false)}
@@ -70,54 +60,48 @@ const TrackingToast = ({ privacyUrl = '/privacy' }: TrackingToastProps): JSX.Ele
       
       <div className="tracking-toast-time">
         <div className="monospace">
-          SESSION ID: {sessionId.substring(0, 8).toUpperCase()}
-        </div>
-        <div className="monospace">
-          TIME ON PAGE: {formatTime(timeSpent)}
+          Time on page: {formatTime(timeSpent)}
         </div>
       </div>
       
       {expanded && (
         <div className="tracking-toast-section">
           <div className="tracking-toast-section-title uppercase mb-xs">
-            Recent Events
+            Recent Activity
           </div>
           
-          {events.length === 0 ? (
-            <div className="monospace">
-              NO EVENTS RECORDED
-            </div>
-          ) : (
-            <div>
-              {events.slice(-5).map((event, index) => (
-                <div key={event.eventId || index} className="tracking-toast-event">
-                  <span className="tracking-toast-event-type"
-                  style={{ 
+          <div>
+            {events.length === 0 ? (
+              <div className="monospace">
+                NO EVENTS RECORDED
+              </div>
+            ) : (
+              <div>
+                {events.map((event, index) => (
+                  <div 
+                    key={index} 
+                    style={{
+                      padding: '4px 0',
+                      borderBottom: index < events.length - 1 ? '1px solid rgba(255,255,255,0.1)' : 'none'
+                    }}
+                  >
+                    <div style={{ 
                       color: event.eventType === 'click' ? '#4dabf7' : 
-                             event.eventType === 'pageview' ? '#12b886' : '#ddd' 
-                  }}>
-                    {event.eventType.toUpperCase()}:
-                  </span>
-                  {' '}
-                  <span className="monospace">
-                    {event.eventType === 'pageview' ? (
-                      <span title={event.url}>
-                        {event.title ? `"${event.title}"` : ''} 
-                        {event.metadata?.path ? ` ${formatPath(event.metadata.path)}` : ''}
-                        {event.referrer ? ` (from: ${formatPath(event.referrer)})` : ''}
+                             event.eventType === 'pageview' ? '#12b886' : '#ddd'
+                    }}>
+                      {event.eventType}:
+                      {' '}
+                      <span style={{ opacity: 0.8 }}>
+                        {event.eventType === 'pageview' 
+                          ? (event.title || event.url || 'Page')
+                          : (event.target?.tagName || 'element')}
                       </span>
-                    ) : (
-                      <span>
-                        {event.target?.tagName || ''}
-                        {event.target?.id ? `#${event.target.id}` : ''}
-                        {event.target?.category ? ` [${event.target.category}]` : ''}
-                      </span>
-                    )}                  
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
       
@@ -125,17 +109,17 @@ const TrackingToast = ({ privacyUrl = '/privacy' }: TrackingToastProps): JSX.Ele
         <div className="tracking-toast-section">
           <div className="tracking-toast-stats">
             <div className="monospace">
-              CLICKS: {clickCount}
+              Clicks: {clickCount}
             </div>
             <div className="monospace">
-              PAGES: {pageViewCount}
+              Pages: {pageViewCount}
             </div>
             <div className="monospace">
-              Session: {sessionId.substring(0, 8)}
+              Device: desktop
             </div>
             <div className="monospace mt-sm">
               <a href={privacyUrl} className="uppercase">
-                PRIVACY POLICY
+                Privacy Policy
               </a>
             </div>
           </div>
@@ -143,6 +127,6 @@ const TrackingToast = ({ privacyUrl = '/privacy' }: TrackingToastProps): JSX.Ele
       )}
     </div>
   );
-};
+}
 
 export default TrackingToast;
