@@ -1,26 +1,58 @@
+:root {
+  --toast-bg-color: #222;
+  --toast-header-bg: #1a1a1a;
+  --toast-section-bg: #1f1f1f;
+  --toast-border-color: #333;
+  --toast-text-color: #fff;
+  --toast-text-muted: #888;
+  --toast-text-dim: #aaa;
+  --toast-highlight-dim: rgba(255, 255, 255, 0.1);
+  
+  --toast-pageview-color: #12b886;
+  --toast-click-color: #4dabf7;
+  --toast-form-color: #845ef7;
+  --toast-custom-color: #ff922b;
+  --toast-eye-color: #ff6b6b;
+  
+  --toast-width-desktop: 320px;
+  --toast-width-tablet: 280px;
+  --toast-width-mobile: 90vw;
+  
+  --toast-event-height-desktop: 250px;
+  --toast-event-height-tablet: 200px;
+  --toast-event-height-mobile: 180px;
+  
+  --toast-font-size: 12px;
+  --toast-font-size-small: 10px;
+  --toast-font-size-mobile: 11px;
+}
+
+/* Base container styles */
 .tracking-toast-container {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: #222;
-  color: white;
-  width: 320px;
+  background-color: var(--toast-bg-color);
+  color: var(--toast-text-color);
+  width: var(--toast-width-desktop);
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   z-index: 9999;
   font-family: monospace;
-  font-size: 12px;
+  font-size: var(--toast-font-size);
+  transition: width 0.3s ease;
 }
 
+/* Header section */
 .tracking-toast-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 12px 15px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--toast-border-color);
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
-  background-color: #1a1a1a;
+  background-color: var(--toast-header-bg);
 }
 
 .tracking-toast-title {
@@ -30,7 +62,7 @@
 }
 
 .tracking-toast-title-icon {
-  color: #ff6b6b;
+  color: var(--toast-eye-color);
   margin-right: 8px;
   font-size: 16px;
 }
@@ -38,14 +70,14 @@
 .tracking-toast-button {
   background: none;
   border: none;
-  color: #aaa;
+  color: var(--toast-text-dim);
   cursor: pointer;
   padding: 0;
   transition: color 0.2s;
 }
 
 .tracking-toast-button:hover {
-  color: #fff;
+  color: var(--toast-text-color);
 }
 
 .tracking-toast-close-button {
@@ -53,9 +85,11 @@
   font-size: 16px;
 }
 
+/* Time display */
 .tracking-toast-time {
   padding: 10px 15px;
-  background-color: #1f1f1f;
+  background-color: var(--toast-section-bg);
+  border-bottom: 1px solid var(--toast-border-color);
 }
 
 .tracking-toast-time-container {
@@ -68,9 +102,10 @@
   font-size: 14px;
 }
 
+/* Content sections */
 .tracking-toast-section {
   padding: 10px 15px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--toast-border-color);
 }
 
 .tracking-toast-section-header {
@@ -82,12 +117,13 @@
 }
 
 .tracking-toast-event-count {
-  font-size: 10px;
-  color: #888;
+  font-size: var(--toast-font-size-small);
+  color: var(--toast-text-muted);
 }
 
+/* Scrollable container */
 .tracking-toast-scroll-container {
-  max-height: 250px;
+  max-height: var(--toast-event-height-desktop);
   overflow: auto;
   display: flex;
   flex-direction: column;
@@ -95,7 +131,7 @@
   -webkit-overflow-scrolling: touch;
   /* For Firefox */
   scrollbar-width: thin;
-  scrollbar-color: #666 #333;
+  scrollbar-color: #666 var(--toast-border-color);
 }
 
 /* Custom scrollbar for WebKit browsers */
@@ -104,7 +140,7 @@
 }
 
 .tracking-toast-scroll-container::-webkit-scrollbar-track {
-  background: #333;
+  background: var(--toast-border-color);
 }
 
 .tracking-toast-scroll-container::-webkit-scrollbar-thumb {
@@ -112,6 +148,7 @@
   border-radius: 6px;
 }
 
+/* Event cards */
 .tracking-toast-event {
   padding: 8px 10px;
   margin-bottom: 6px;
@@ -119,6 +156,10 @@
   background-color: rgba(40, 40, 40, 0.6);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
+}
+
+.tracking-toast-event:hover {
+  background-color: rgba(50, 50, 50, 0.8);
 }
 
 .tracking-toast-event-header {
@@ -136,8 +177,8 @@
 }
 
 .tracking-toast-event-time {
-  color: #aaa;
-  font-size: 10px;
+  color: var(--toast-text-dim);
+  font-size: var(--toast-font-size-small);
   background-color: rgba(0, 0, 0, 0.2);
   padding: 2px 5px;
   border-radius: 3px;
@@ -145,7 +186,7 @@
 
 .tracking-toast-event-details {
   margin-left: 10px;
-  font-size: 11px;
+  font-size: var(--toast-font-size-small);
 }
 
 .tracking-toast-event-property {
@@ -153,19 +194,20 @@
 }
 
 .tracking-toast-event-label {
-  color: #888;
+  color: var(--toast-text-muted);
 }
 
 .tracking-toast-event-value {
-  color: #ddd;
+  color: var(--toast-text-dim);
 }
 
+/* Stats section */
 .tracking-toast-stats {
   padding: 12px 15px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  background-color: #1f1f1f;
+  background-color: var(--toast-section-bg);
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
 }
@@ -186,7 +228,7 @@
 }
 
 .tracking-toast-privacy-link a {
-  color: #4dabf7;
+  color: var(--toast-click-color);
   text-decoration: none;
   padding: 4px 8px;
   border-radius: 4px;
@@ -200,31 +242,31 @@
 
 /* Event type specific colors */
 .tracking-toast-event-pageview {
-  border-left: 3px solid #12b886;
+  border-left: 3px solid var(--toast-pageview-color);
 }
 .tracking-toast-event-pageview .tracking-toast-event-type {
-  color: #12b886;
+  color: var(--toast-pageview-color);
 }
 
 .tracking-toast-event-click {
-  border-left: 3px solid #4dabf7;
+  border-left: 3px solid var(--toast-click-color);
 }
 .tracking-toast-event-click .tracking-toast-event-type {
-  color: #4dabf7;
+  color: var(--toast-click-color);
 }
 
 .tracking-toast-event-form_submit {
-  border-left: 3px solid #845ef7;
+  border-left: 3px solid var(--toast-form-color);
 }
 .tracking-toast-event-form_submit .tracking-toast-event-type {
-  color: #845ef7;
+  color: var(--toast-form-color);
 }
 
 .tracking-toast-event-custom {
-  border-left: 3px solid #ff922b;
+  border-left: 3px solid var(--toast-custom-color);
 }
 .tracking-toast-event-custom .tracking-toast-event-type {
-  color: #ff922b;
+  color: var(--toast-custom-color);
 }
 
 /* No events message */
@@ -232,4 +274,110 @@
   padding: 8px 0;
   opacity: 0.7;
   text-align: center;
+}
+
+/* New and unread events highlight */
+.tracking-toast-event-new {
+  animation: newEvent 2s ease-in-out;
+}
+
+@keyframes newEvent {
+  0% { background-color: rgba(var(--toast-custom-color), 0.3); }
+  100% { background-color: rgba(40, 40, 40, 0.6); }
+}
+
+/* Responsive styles */
+/* Tablet breakpoint */
+@media screen and (max-width: 768px) {
+  .tracking-toast-container {
+    width: var(--toast-width-tablet);
+    font-size: var(--toast-font-size-small);
+  }
+  
+  .tracking-toast-scroll-container {
+    max-height: var(--toast-event-height-tablet);
+  }
+  
+  .tracking-toast-stats {
+    padding: 10px;
+    gap: 8px;
+  }
+  
+  .tracking-toast-event-time {
+    font-size: 9px;
+  }
+}
+
+/* Mobile breakpoint */
+@media screen and (max-width: 480px) {
+  .tracking-toast-container {
+    width: var(--toast-width-mobile);
+    right: 5vw;
+    bottom: 10px;
+    font-size: var(--toast-font-size-mobile);
+  }
+  
+  .tracking-toast-scroll-container {
+    max-height: var(--toast-event-height-mobile);
+  }
+  
+  .tracking-toast-header,
+  .tracking-toast-time,
+  .tracking-toast-section {
+    padding: 8px 10px;
+  }
+  
+  .tracking-toast-title-icon {
+    font-size: 14px;
+  }
+  
+  .tracking-toast-stats {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  
+  .tracking-toast-privacy-link {
+    grid-column: 1;
+  }
+  
+  /* Hide less important information on very small screens */
+  .tracking-toast-event-time {
+    max-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Collapsed view for mobile */
+  .tracking-toast-collapsed-mobile {
+    width: auto;
+    min-width: 120px;
+  }
+  
+  /* Add a mobile toggle button */
+  .tracking-toast-mobile-toggle {
+    display: block;
+  }
+}
+
+/* For very small screens, offer a compact view option */
+@media screen and (max-width: 320px) {
+  .tracking-toast-container {
+    bottom: 5px;
+  }
+  
+  .tracking-toast-event-details {
+    margin-left: 5px;
+  }
+  
+  /* Optional mini-view for extremely small screens */
+  .tracking-toast-mini-view .tracking-toast-event-details,
+  .tracking-toast-mini-view .tracking-toast-event-time {
+    display: none;
+  }
+  
+  .tracking-toast-mini-view .tracking-toast-event {
+    padding: 4px 6px;
+    margin-bottom: 3px;
+  }
 }
