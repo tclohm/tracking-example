@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router';
 import { TrackingProvider, trackingService } from 'react-user-tracking';
-import TrackingToast from './components/TrackingToast';
+import TickerTrackingToast from './components/TickerTrackingToast';
 import { ThemeProvider } from 'styled-components';
 import { GlobalStyles } from './styles/GlobalStyles';
 import { theme } from './styles/theme';
@@ -59,7 +59,13 @@ function App() {
           </footer>
           </Router>
         </CartProvider>
-        <TrackingToast privacyUrl="/privacy" />
+        <TickerTrackingToast 
+        privacyUrl="/privacy" 
+        tickerSpeed={40}
+        maxEvents={100}
+        initiallyVisible={true}
+        initiallyExpanded={false}
+        />
       </TrackingProvider>
     </ThemeProvider>
   );

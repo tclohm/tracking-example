@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTracking } from 'react-user-tracking';
-import '../styles/TickerTrackingToast';
+import '../styles/TickerTrackingToast.css';
 
 interface TickerTrackingToastProps {
   privacyUrl?: string;
