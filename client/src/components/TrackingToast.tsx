@@ -1,18 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTracking } from 'react-user-tracking';
 import '../styles/TrackingToast.css';
 
 interface TrackingToastProps {
   privacyUrl?: string;
+  autoCollapse?: boolean; // Auto collapse on small screens
+  miniView?: boolean; // Enable mini view on very small screens
 }
 
-export default function TrackingToast({ privacyUrl = '/privacy' }: TrackingToastProps): JSX.Element | null {
+export default function TrackingToast({ 
+  privacyUrl = '/privacy',
+  autoCollapse = true,
+  miniView = true
+}: TrackingToastProps): JSX.Element | null {
   const { events, sessionId } = useTracking();
   const [visible, setVisible] = useState(true);
   const [expanded, setExpanded] = useState(false);
   const [timeSpent, setTimeSpent] = useState(0);
   const [currentTime, setCurrentTime] = useState(Date.now());
-
+  const [isMobile, setIsMobile] = useState(false);
+  const [isExtraSmall, setIsExtraSmall] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
+  
+  // Reference to track previously seen events
+  const prevEventsCountRef = useRef(0);
+  
+  // Check for new events
+  useEffect(() => {
+    prevEventsCountRef.current = events.length;
+  }, [events]);
+  
   // Update current time for relative timestamps
   useEffect(() => {
     const timer = setInterval(() => {
@@ -28,6 +45,28 @@ export default function TrackingToast({ privacyUrl = '/privacy' }: TrackingToast
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+  
+  // Check screen size for responsive adjustments
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 480);
+      setIsExtraSmall(window.innerWidth < 320);
+      
+      // Auto collapse on small screens if enabled
+      if (autoCollapse && window.innerWidth < 480) {
+        setExpanded(false);
+      }
+    };
+    
+    // Set initial values
+    handleResize();
+    
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+    
+    // Clean up
+    return () => window.removeEventListener('resize', handleResize);
+  }, [autoCollapse]);
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -38,7 +77,11 @@ export default function TrackingToast({ privacyUrl = '/privacy' }: TrackingToast
   // Format absolute timestamp
   const formatTimestamp = (timestamp: number): string => {
     const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    return date.toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      second: '2-digit' 
+    });
   };
   
   // Format relative timestamp
@@ -46,15 +89,15 @@ export default function TrackingToast({ privacyUrl = '/privacy' }: TrackingToast
     const seconds = Math.floor((currentTime - timestamp) / 1000);
     
     if (seconds < 5) return 'just now';
-    if (seconds < 60) return `${seconds} seconds ago`;
+    if (seconds < 60) return `${seconds}s ago`;
     
     const minutes = Math.floor(seconds / 60);
-    if (minutes === 1) return '1 minute ago';
-    if (minutes < 60) return `${minutes} minutes ago`;
+    if (minutes === 1) return '1m ago';
+    if (minutes < 60) return `${minutes}m ago`;
     
     const hours = Math.floor(minutes / 60);
-    if (hours === 1) return '1 hour ago';
-    if (hours < 24) return `${hours} hours ago`;
+    if (hours === 1) return '1h ago';
+    if (hours < 24) return `${hours}h ago`;
     
     return formatTimestamp(timestamp);
   };
@@ -78,6 +121,11 @@ export default function TrackingToast({ privacyUrl = '/privacy' }: TrackingToast
       default: return 'tracking-toast-event-custom';
     }
   };
+  
+  // Check if event is new (to highlight)
+  const isNewEvent = (index: number): boolean => {
+    return index < events.length - prevEventsCountRef.current;
+  };
 
   if (!visible) return null;
 
@@ -88,37 +136,60 @@ export default function TrackingToast({ privacyUrl = '/privacy' }: TrackingToast
   // Get most recent events first (reversed)
   const recentEvents = [...events].reverse();
   
+  // Build container class names based on current state
+  const containerClassNames = [
+    'tracking-toast-container',
+    isMobile ? 'tracking-toast-mobile' : '',
+    isMinimized ? 'tracking-toast-collapsed-mobile' : '',
+    isExtraSmall && miniView ? 'tracking-toast-mini-view' : ''
+  ].filter(Boolean).join(' ');
+  
   return (
-    <div className="tracking-toast-container">
+    <div className={containerClassNames}>
       <div className="tracking-toast-header">
         <div className="tracking-toast-title">
           <span className="tracking-toast-title-icon">👁️</span>
-          We are tracking you
+          {(!isMobile || !isMinimized) && 'We are tracking you'}
         </div>
         <div>
-          <button 
-            onClick={() => setExpanded(!expanded)}
-            className="tracking-toast-button"
-          >
-            {expanded ? 'Less' : 'More'}
-          </button>
-          <button 
-            onClick={() => setVisible(false)}
-            className="tracking-toast-button tracking-toast-close-button"
-          >
-            ×
-          </button>
+          {isMobile && (
+            <button 
+              onClick={() => setIsMinimized(!isMinimized)}
+              className="tracking-toast-button tracking-toast-mobile-toggle"
+            >
+              {isMinimized ? '↔️' : '↕️'}
+            </button>
+          )}
+          
+          {(!isMobile || !isMinimized) && (
+            <>
+              <button 
+                onClick={() => setExpanded(!expanded)}
+                className="tracking-toast-button"
+              >
+                {expanded ? 'Less' : 'More'}
+              </button>
+              <button 
+                onClick={() => setVisible(false)}
+                className="tracking-toast-button tracking-toast-close-button"
+              >
+                ×
+              </button>
+            </>
+          )}
         </div>
       </div>
       
-      <div className="tracking-toast-time">
-        <div className="tracking-toast-time-container">
-          <span className="tracking-toast-time-icon">⏱️</span>
-          <span>Time on page: {formatTime(timeSpent)}</span>
+      {(!isMinimized) && (
+        <div className="tracking-toast-time">
+          <div className="tracking-toast-time-container">
+            <span className="tracking-toast-time-icon">⏱️</span>
+            <span>Time on page: {formatTime(timeSpent)}</span>
+          </div>
         </div>
-      </div>
+      )}
       
-      {expanded && (
+      {expanded && !isMinimized && (
         <>
           <div className="tracking-toast-section">
             <div className="tracking-toast-section-header">
@@ -138,7 +209,11 @@ export default function TrackingToast({ privacyUrl = '/privacy' }: TrackingToast
                   {recentEvents.map((event, index) => (
                     <div 
                       key={event.eventId || index} 
-                      className={`tracking-toast-event ${getEventTypeClass(event.eventType)}`}
+                      className={`
+                        tracking-toast-event 
+                        ${getEventTypeClass(event.eventType)}
+                        ${isNewEvent(index) ? 'tracking-toast-event-new' : ''}
+                      `}
                     >
                       <div className="tracking-toast-event-header">
                         <span className="tracking-toast-event-type">
@@ -146,7 +221,7 @@ export default function TrackingToast({ privacyUrl = '/privacy' }: TrackingToast
                           {event.eventType}
                         </span>
                         <span className="tracking-toast-event-time">
-                          {getRelativeTime(event.timestamp)}
+                          {isMobile ? getRelativeTime(event.timestamp).replace(' ago', '') : getRelativeTime(event.timestamp)}
                         </span>
                       </div>
                       
@@ -198,15 +273,21 @@ export default function TrackingToast({ privacyUrl = '/privacy' }: TrackingToast
               <span className="tracking-toast-stat-icon" style={{ color: '#12b886' }}>🔍</span>
               Pages: {pageViewCount}
             </div>
-            <div className="tracking-toast-stat">
-              <span className="tracking-toast-stat-icon" style={{ color: '#aaa' }}>💻</span>
-              Device: desktop
-            </div>
-            <div className="tracking-toast-stat">
-              <span className="tracking-toast-stat-icon" style={{ color: '#aaa' }}>🆔</span>
-              Session: {sessionId.substring(0, 8)}
-            </div>
-            <div className="tracking-toast-privacy-link">
+            
+            {!isMobile && (
+              <>
+                <div className="tracking-toast-stat">
+                  <span className="tracking-toast-stat-icon" style={{ color: '#aaa' }}>💻</span>
+                  Device: {isMobile ? 'mobile' : 'desktop'}
+                </div>
+                <div className="tracking-toast-stat">
+                  <span className="tracking-toast-stat-icon" style={{ color: '#aaa' }}>🆔</span>
+                  Session: {sessionId.substring(0, 8)}
+                </div>
+              </>
+            )}
+            
+            <div className={`tracking-toast-privacy-link ${isMobile ? 'tracking-toast-mobile-footer' : ''}`}>
               <a href={privacyUrl}>
                 PRIVACY POLICY
               </a>
