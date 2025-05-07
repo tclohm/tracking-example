@@ -30,7 +30,7 @@
 /* Base container styles */
 .tracking-toast-container {
   position: fixed;
-  bottom: 20px;
+  bottom: 19px;
   right: 20px;
   background-color: var(--toast-bg-color);
   color: var(--toast-text-color);

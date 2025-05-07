@@ -1,6 +1,5 @@
 :root {
   --widget-bg-color: rgba(30, 30, 30, 0.85);
-  --widget-bg-hover: rgba(40, 40, 40, 0.9);
   --widget-text-color: rgba(255, 255, 255, 0.9);
   --widget-text-secondary: rgba(255, 255, 255, 0.65);
   --widget-border-radius: 18px;
@@ -17,6 +16,33 @@
   --transition-speed: 0.3s;
 }
 
+/* Toggle button */
+.tracking-toggle-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--widget-bg-color);
+  backdrop-filter: var(--widget-blur);
+  -webkit-backdrop-filter: var(--widget-blur);
+  color: var(--widget-text-color);
+  border: var(--widget-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--widget-shadow);
+  z-index: 9999;
+  font-size: 20px;
+  transition: transform 0.2s ease;
+}
+
+.tracking-toggle-button:hover {
+  transform: scale(1.1);
+}
+
 /* Main container */
 .tracking-widget-container {
   position: fixed;
@@ -25,8 +51,23 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  z-index: 9999;
+  z-index: 9998;
   width: 320px;
+  transition: opacity var(--transition-speed) ease, 
+              transform var(--transition-speed) ease, 
+              visibility var(--transition-speed) ease;
+}
+
+.tracking-widget-container.hidden {
+  opacity: 0;
+  transform: translateY(-20px);
+  visibility: hidden;
+}
+
+.tracking-widget-container.visible {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
 }
 
 /* Widget base styles */
@@ -40,7 +81,7 @@
   color: var(--widget-text-color);
   overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  transition: transform var(--transition-speed) ease, opacity var(--transition-speed) ease;
+  transition: transform 0.2s ease;
 }
 
 .tracking-widget:hover {
@@ -72,31 +113,6 @@
 
 .tracking-widget-title-icon {
   font-size: 18px;
-}
-
-/* Controls */
-.tracking-widget-controls {
-  display: flex;
-  gap: 8px;
-}
-
-.tracking-widget-button {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--widget-text-color);
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s ease;
-}
-
-.tracking-widget-button:hover {
-  background-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Stats grid */
@@ -135,18 +151,7 @@
 
 /* Activity widget */
 .tracking-widget-activity {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height var(--transition-speed) ease;
-}
-
-.tracking-widget-activity.expanded {
-  max-height: 400px;
-}
-
-.tracking-widget-section {
   padding: 16px 18px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .tracking-widget-section-header {
@@ -175,7 +180,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-height: 240px;
+  max-height: 280px;
   overflow-y: auto;
   padding-right: 4px;
 }

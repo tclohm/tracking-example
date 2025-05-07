@@ -4,15 +4,15 @@ import '../styles/TrackingSidebar.css';
 
 interface TrackingWidgetProps {
   privacyUrl?: string;
-  initiallyExpanded?: boolean;
+  initiallyVisible?: boolean;
 }
 
 const TrackingSidebar: React.FC<TrackingWidgetProps> = ({
   privacyUrl = '/privacy',
-  initiallyExpanded = false
+  initiallyVisible = false
 }) => {
   const { events, sessionId } = useTracking();
-  const [expanded, setExpanded] = useState(initiallyExpanded);
+  const [visible, setVisible] = useState(initiallyVisible);
   const [timeSpent, setTimeSpent] = useState(0);
   const [currentTime, setCurrentTime] = useState(Date.now());
   
@@ -86,68 +86,69 @@ const TrackingSidebar: React.FC<TrackingWidgetProps> = ({
   const recentEvents = [...events].reverse().slice(0, 15);
   
   return (
-    <div className="tracking-widget-container">
-      {/* Summary Widget */}
-      <div className="tracking-widget tracking-widget-summary">
-        <div className="tracking-widget-title">
-          <h3>
-            <span className="tracking-widget-title-icon">📊</span>
-            Tracking Dashboard
-          </h3>
-          <div className="tracking-widget-controls">
-            <button 
-              className="tracking-widget-button" 
-              onClick={() => setExpanded(!expanded)}
-              title={expanded ? "Collapse" : "Expand"}
-            >
-              {expanded ? '−' : '+'}
-            </button>
-          </div>
-        </div>
-        
-        <div className="tracking-widget-stats">
-          <div className="tracking-widget-stat">
-            <div className="tracking-widget-stat-header">
-              <span className="tracking-widget-stat-icon">👆</span>
-              <span>Clicks</span>
-            </div>
-            <div className="tracking-widget-stat-value">{clickCount}</div>
-          </div>
-          
-          <div className="tracking-widget-stat">
-            <div className="tracking-widget-stat-header">
-              <span className="tracking-widget-stat-icon">🔍</span>
-              <span>Page Views</span>
-            </div>
-            <div className="tracking-widget-stat-value">{pageViewCount}</div>
-          </div>
-          
-          <div className="tracking-widget-stat">
-            <div className="tracking-widget-stat-header">
-              <span className="tracking-widget-stat-icon">📝</span>
-              <span>Forms</span>
-            </div>
-            <div className="tracking-widget-stat-value">{formSubmitCount}</div>
-          </div>
-          
-          <div className="tracking-widget-stat">
-            <div className="tracking-widget-stat-header">
-              <span className="tracking-widget-stat-icon">⏱️</span>
-              <span>Time</span>
-            </div>
-            <div className="tracking-widget-stat-value">{formatTime(timeSpent)}</div>
-          </div>
-        </div>
-        
-        <div className="tracking-widget-session">
-          <span>Session: {sessionId.substring(0, 10)}...</span>
-          <span>{events.length} events</span>
-        </div>
-      </div>
+    <>
+      {/* Toggle Button */}
+      <button 
+        className="tracking-toggle-button"
+        onClick={() => setVisible(!visible)}
+        title={visible ? "Hide tracking" : "Show tracking"}
+      >
+        {visible ? '×' : '👀'}
+      </button>
       
-      {/* Activity Widget (Expandable) */}
-      <div className={`tracking-widget tracking-widget-activity ${expanded ? 'expanded' : ''}`}>
-        <div className="tracking-widget-section">
+      {/* Widget Container */}
+      <div className={`tracking-widget-container ${visible ? 'visible' : 'hidden'}`}>
+        {/* Summary Widget */}
+        <div className="tracking-widget tracking-widget-summary">
+          <div className="tracking-widget-title">
+            <h3>
+              <span className="tracking-widget-title-icon">📊</span>
+              Tracking Dashboard
+            </h3>
+          </div>
+          
+          <div className="tracking-widget-stats">
+            <div className="tracking-widget-stat">
+              <div className="tracking-widget-stat-header">
+                <span className="tracking-widget-stat-icon">👆</span>
+                <span>Clicks</span>
+              </div>
+              <div className="tracking-widget-stat-value">{clickCount}</div>
+            </div>
+            
+            <div className="tracking-widget-stat">
+              <div className="tracking-widget-stat-header">
+                <span className="tracking-widget-stat-icon">🔍</span>
+                <span>Page Views</span>
+              </div>
+              <div className="tracking-widget-stat-value">{pageViewCount}</div>
+            </div>
+            
+            <div className="tracking-widget-stat">
+              <div className="tracking-widget-stat-header">
+                <span className="tracking-widget-stat-icon">📝</span>
+                <span>Forms</span>
+              </div>
+              <div className="tracking-widget-stat-value">{formSubmitCount}</div>
+            </div>
+            
+            <div className="tracking-widget-stat">
+              <div className="tracking-widget-stat-header">
+                <span className="tracking-widget-stat-icon">⏱️</span>
+                <span>Time</span>
+              </div>
+              <div className="tracking-widget-stat-value">{formatTime(timeSpent)}</div>
+            </div>
+          </div>
+          
+          <div className="tracking-widget-session">
+            <span>Session: {sessionId.substring(0, 10)}...</span>
+            <span>{events.length} events</span>
+          </div>
+        </div>
+        
+        {/* Activity Widget */}
+        <div className="tracking-widget tracking-widget-activity">
           <div className="tracking-widget-section-header">
             <div className="tracking-widget-section-title">Recent Activity</div>
             <div className="tracking-widget-count">{events.length}</div>
@@ -197,7 +198,7 @@ const TrackingSidebar: React.FC<TrackingWidgetProps> = ({
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
